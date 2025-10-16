@@ -38,6 +38,7 @@
         <!-- Dependency for Java 8+ Date/Time formatting in Thymeleaf -->
         <dependency>
             <groupId>org.thymeleaf.extras</groupId>
+            <!-- FIX: Corrected the invalid XML tag that was breaking the build -->
             <artifactId>thymeleaf-extras-java8time</artifactId>
             <version>3.0.4.RELEASE</version>
         </dependency>
@@ -48,7 +49,7 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
-        <!-- FIX: This is the critical dependency for Thymeleaf + Spring Security integration -->
+        <!-- This is the critical dependency for Thymeleaf + Spring Security integration -->
         <dependency>
             <groupId>org.thymeleaf.extras</groupId>
             <artifactId>thymeleaf-extras-springsecurity6</artifactId>

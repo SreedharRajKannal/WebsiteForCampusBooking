@@ -66,7 +66,7 @@ campus-booking/
 │   ├── templates/       # Thymeleaf HTML files (Dashboards, Forms, Login)
 │   └── application.properties # Database and server configuration
 └── pom.xml              # Maven dependencies
-
+```
 ## 🚀 How to Run the Application
 
 Follow these steps to get the application running on your local machine:
@@ -76,10 +76,25 @@ Ensure you have a MySQL server running locally. Create a new, empty database nam
 
 ```sql
 CREATE DATABASE campus_booking;
-
+```
 ### 2. Configuration
-Open the src/main/resources/application.properties file and update your database credentials to match your local MySQL setup:
+Open the src/main/resources/application.properties file and update your database credentials to match your `local MySQL setup`:
 
-'''Properties
+```Properties
 spring.datasource.username=your_mysql_username
 spring.datasource.password=your_mysql_password
+```
+### 3. Run the Application
+You can run the application using your preferred `IDE` (by executing the main method in WebApplication.java), or by using the `terminal`.
+
+To run via `terminal`, navigate to the project's root directory and execute:
+
+```Bash
+./mvnw spring-boot:run
+```
+### 4. Access the Web App
+Once the application has started successfully, open your web browser and navigate to:
+
+```Plaintext
+http://localhost:8080
+```

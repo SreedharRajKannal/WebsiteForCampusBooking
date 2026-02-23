@@ -80,7 +80,7 @@ CREATE DATABASE campus_booking;
 ### 2. Configuration
 Open the src/main/resources/application.properties file and update your database credentials to match your `local MySQL setup`:
 
-```Properties
+```properties
 spring.datasource.username=your_mysql_username
 spring.datasource.password=your_mysql_password
 ```
@@ -89,12 +89,12 @@ You can run the application using your preferred `IDE` (by executing the main me
 
 To run via `terminal`, navigate to the project's root directory and execute:
 
-```Bash
+```bash
 ./mvnw spring-boot:run
 ```
 ### 4. Access the Web App
 Once the application has started successfully, open your web browser and navigate to:
 
-```Plaintext
+```text
 http://localhost:8080
 ```

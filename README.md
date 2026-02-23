@@ -1,79 +1,52 @@
-# WebsiteForCampusBooking
-This project was created with the help of Gemini
+# 🎓 Campus Event Booking System
 
-Campus Event Booking System
-1. Introduction
-This project is a role-based web application for managing event bookings on a college campus. It digitizes the entire process, from a student's initial request to the final approval from the Principal, through a clear, multi-level approval workflow.
+> A role-based web application designed to digitize and streamline the event booking and approval process on a college campus.
 
-The system is designed to provide a secure and efficient experience for different user roles, ensuring that each user only sees the information and actions relevant to their position.
+## 📖 Introduction
+This project manages event bookings on a college campus by digitizing the entire process—from a student's initial request to the final approval from the Principal—through a clear, multi-level approval workflow. 
 
-2. Core Features
-User Registration & Secure Login: Users can register for an account with a specific role (Student, Staff Advisor, HOD, etc.). Passwords are securely hashed, and the login system is managed by Spring Security.
+The system is designed to provide a secure and efficient experience for different user roles, ensuring that each user only sees the information and actions relevant to their position and authority level.
 
-Role-Based Dashboards: After logging in, users are redirected to a dashboard tailored to their role:
+---
 
-Student Dashboard: Students can submit new event booking requests and view the status (Pending, Approved, Rejected) of their past submissions.
+## ✨ Core Features
 
-Approver Dashboards: Each level of approver (Staff Advisor, HOD, Dean, Principal) has a dedicated dashboard that shows only the booking requests currently awaiting their specific approval.
+* **🔐 User Registration & Secure Login:** * Users can register for an account with a specific role (e.g., Student, Staff Advisor, HOD). 
+    * Passwords are securely hashed, and the login system is robustly managed by **Spring Security**.
+* **🎛️ Role-Based Dashboards:** * After logging in, users are automatically redirected to a dashboard tailored to their role.
+    * **Student Dashboard:** Students can submit new event booking requests and view the live status (Pending, Approved, Rejected) of their past submissions.
+    * **Approver Dashboards:** Each level of approver has a dedicated dashboard showing only the booking requests currently awaiting their specific approval.
+* **✅ Multi-Level Approval Workflow:** * A booking request submitted by a student must be approved sequentially through the chain of command: **Staff Advisor ➡️ HOD ➡️ Dean ➡️ Principal**.
+    * A rejection at any level stops the process immediately, while an approval moves the request to the next authority level.
+* **🎨 Dynamic Frontend:** * The user interface is built with Thymeleaf and styled with a modern dark theme, providing a clean, responsive, and user-friendly experience.
 
-Multi-Level Approval Workflow: A booking request submitted by a student must be approved sequentially:
+---
 
-Staff Advisor
+## 🛠️ Technologies Used
 
-HOD
+### Backend
+* **Java 25**
+* **Spring Boot 3:** Core framework for the application.
+* **Spring Security:** Handles authentication (login) and authorization (role-based access).
+* **Spring Data JPA (Hibernate):** Facilitates database communication and maps Java objects to database tables.
 
-Dean
+### Database
+* **MySQL:** Relational database management system.
 
-Principal
+### Frontend
+* **Thymeleaf:** Modern server-side Java template engine for creating dynamic HTML pages.
+* **HTML5 & CSS3:** For structuring and styling the web pages.
 
-A rejection at any level stops the process. An approval moves the request to the next level.
+### Build Tool
+* **Maven:** Manages project dependencies and application builds.
 
-Dynamic Frontend: The user interface is built with Thymeleaf and styled with a modern dark theme, providing a clean and responsive experience.
+---
 
-3. Technologies Used
-Backend:
+## 🚀 How to Run the Application
 
-Java 25
+Follow these steps to get the application running on your local machine:
 
-Spring Boot 3: Core framework for the application.
-
-Spring Security: For handling authentication (login) and authorization (role-based access).
-
-Spring Data JPA (Hibernate): For communicating with the database and mapping Java objects to database tables.
-
-Database:
-
-MySQL
-
-Frontend:
-
-Thymeleaf: A modern server-side Java template engine for creating dynamic HTML pages.
-
-HTML5 & CSS3: For structuring and styling the web pages.
-
-Build Tool:
-
-Maven: For managing project dependencies and building the application.
-
-4. How to Run the Application
-Database Setup: Ensure you have a MySQL server running. Create a database named campus_booking. The application will automatically create the necessary tables on its first run.
-
-Configuration: Open the src/main/resources/application.properties file and update the spring.datasource.username and spring.datasource.password fields to match your MySQL credentials.
-
-Run the App: Execute the main method in the WebApplication.java file from your IDE, or run the command mvnw spring-boot:run in your project's root directory.
-
-Access: Open your web browser and navigate to http://localhost:8080.
-
-5. Contributors & Acknowledgements
-This project was a collaborative effort.
-
-Team Members(Mains):
-
-Sreedhar
-
-Karthik Nair
-
-Sivapriyan R S
-
-Special Thanks:
-We would also like to acknowledge the significant assistance provided by Google's Gemini, which served as an AI collaborator. Gemini was instrumental in generating foundational code, debugging complex errors (such as issues with Spring Security, Maven builds, and Thymeleaf templates), and offering architectural guidance throughout the development process.
+### 1. Database Setup
+Ensure you have a MySQL server running locally. Create a new, empty database named `campus_booking`:
+```sql
+CREATE DATABASE campus_booking;

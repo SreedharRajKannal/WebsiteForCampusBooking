@@ -44,7 +44,7 @@ public class WebSecurityConfig {
             .authorizeHttpRequests(authorize -> authorize
                 // Allow public, unauthenticated access to these specific URLs.
                 // This includes the root, login, registration, "no pending requests" page, and all CSS files.
-                .requestMatchers("/", "/login", "/register", "/no-pending-requests", "/css/**", "/style.css").permitAll()
+                .requestMatchers("/", "/login", "/register", "/no-pending-requests", "/admin/reset", "/css/**", "/style.css").permitAll()
                 // All other requests in the application require the user to be authenticated.
                 .anyRequest().authenticated()
             )

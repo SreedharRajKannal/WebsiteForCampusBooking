@@ -13,4 +13,7 @@ public interface BookingRepository extends JpaRepository<Booking, String> {
 
     // Find all bookings created by a specific user (by name)
     List<Booking> findByUserName(String name);
+
+    // Check if a booking exists for the given facility, date, and timeslot (excluding rejected bookings)
+    boolean existsByFacilityNameIgnoreCaseAndDateAndTimeSlotIgnoreCaseAndStatusNot(String facilityName, java.time.LocalDate date, String timeSlot, Status status);
 }

@@ -7,8 +7,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class LoginController {
 
     /**
+     * Redirects the root URL to the login page.
+     * This prevents the 404 Whitelabel Error when visiting http://localhost:8080/
+     */
+    @GetMapping("/")
+    public String root() {
+        return "redirect:/login";
+    }
+
+    /**
      * This method handles GET requests for the /login URL and displays the login page.
-     * This is the crucial missing piece that will resolve the redirect loop.
      * @return The name of the HTML template to render ("login.html").
      */
     @GetMapping("/login")

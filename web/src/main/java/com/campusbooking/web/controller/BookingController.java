@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.security.Principal;
+import java.util.List;
+import com.campusbooking.web.model.ApprovedBookingHistory;
+import com.campusbooking.web.repository.ApprovedBookingHistoryRepository;
 
 @Controller
 public class BookingController {
@@ -24,6 +27,9 @@ public class BookingController {
 
     @Autowired
     private PersonRepository personRepository;
+
+    @Autowired
+    private ApprovedBookingHistoryRepository historyRepository;
 
     /**
      * Displays the form for creating a new booking request.
@@ -54,9 +60,14 @@ public class BookingController {
             return "redirect:/student/dashboard?error=auth";
         }
         
-        bookingService.createBooking(booking);
+        try {
+            bookingService.createBooking(booking);
+        } catch (IllegalArgumentException e) {
+            return "redirect:/bookings/new?error=" + java.net.URLEncoder.encode(e.getMessage(), java.nio.charset.StandardCharsets.UTF_8);
+        }
+        
         // Redirect back to the student's dashboard to show the updated list
-        return "redirect:/student/dashboard";
+        return "redirect:/student/dashboard?success=" + java.net.URLEncoder.encode("Booking request submitted successfully.", java.nio.charset.StandardCharsets.UTF_8);
     }
 
     /**
@@ -65,20 +76,45 @@ public class BookingController {
     @PostMapping("/bookings/{id}/process")
     public String processBooking(@PathVariable String id, 
                                  @RequestParam String decision,
-                                 @RequestParam String approverRole,
-                                 @RequestParam String approverName,
-                                 @RequestParam String remark) {
+                                 @RequestParam(required = false, defaultValue = "") String remark,
+                                 Principal principal,
+                                 org.springframework.security.core.Authentication authentication) {
         boolean isApproved = "approve".equalsIgnoreCase(decision);
+        String approverName = principal.getName();
+        
+        String authority = authentication.getAuthorities().iterator().next().getAuthority();
+        String approverRole = switch (authority) {
+            case "ROLE_STAFF_ADVISOR" -> "Staff Advisor";
+            case "ROLE_HOD" -> "HOD";
+            case "ROLE_DEAN" -> "Dean";
+            case "ROLE_PRINCIPAL" -> "Principal";
+            default -> "Unknown";
+        };
+
         bookingService.processApproval(id, approverRole, approverName, isApproved, remark);
         
         // Redirect the approver back to their specific dashboard after taking action
-        return switch (approverRole) {
-            case "Staff Advisor" -> "redirect:/staff-advisor/dashboard";
-            case "HOD" -> "redirect:/hod/dashboard";
-            case "Dean" -> "redirect:/dean/dashboard";
-            case "Principal" -> "redirect:/principal/dashboard";
+        return switch (authority) {
+            case "ROLE_STAFF_ADVISOR" -> "redirect:/staff-advisor/dashboard";
+            case "ROLE_HOD" -> "redirect:/hod/dashboard";
+            case "ROLE_DEAN" -> "redirect:/dean/dashboard";
+            case "ROLE_PRINCIPAL" -> "redirect:/principal/dashboard";
             default -> "redirect:/"; // Fallback redirect
         };
+    }
+
+    /**
+     * Fetches the approval history for the currently logged-in approver.
+     */
+    @GetMapping("/approver/history")
+    public String showApproverHistory(Model model, Principal principal) {
+        Person person = personRepository.findByName(principal.getName()).orElse(null);
+        if (person != null) {
+            List<ApprovedBookingHistory> historyList = historyRepository.findByApproverIdOrderByApprovalTimestampDesc(person.getId());
+            model.addAttribute("historyList", historyList);
+            model.addAttribute("username", principal.getName());
+        }
+        return "approver-history";
     }
 }
 

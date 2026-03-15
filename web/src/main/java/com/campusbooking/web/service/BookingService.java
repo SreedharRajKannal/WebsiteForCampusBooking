@@ -1,8 +1,11 @@
 package com.campusbooking.web.service;
 
+import com.campusbooking.web.model.ApprovedBookingHistory;
 import com.campusbooking.web.model.Booking;
 import com.campusbooking.web.model.Status;
+import com.campusbooking.web.repository.ApprovedBookingHistoryRepository;
 import com.campusbooking.web.repository.BookingRepository;
+import com.campusbooking.web.repository.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +19,12 @@ public class BookingService {
 
     @Autowired
     private BookingRepository bookingRepository;
+
+    @Autowired
+    private ApprovedBookingHistoryRepository historyRepository;
+
+    @Autowired
+    private PersonRepository personRepository;
 
     private static final Map<Status, Status> nextStatusMap = new EnumMap<>(Status.class);
     static {
@@ -34,6 +43,23 @@ public class BookingService {
     }
 
     public Booking createBooking(Booking booking) {
+        // FIX: Validate that the booking date is not in the past.
+        if (booking.getDate() != null && booking.getDate().isBefore(java.time.LocalDate.now())) {
+            throw new IllegalArgumentException("The selected event date cannot be in the past.");
+        }
+        
+        if (booking.getFacility() != null && booking.getFacility().getName() != null) {
+            boolean isConflict = bookingRepository.existsByFacilityNameIgnoreCaseAndDateAndTimeSlotIgnoreCaseAndStatusNot(
+                    booking.getFacility().getName(),
+                    booking.getDate(),
+                    booking.getTimeSlot(),
+                    Status.REJECTED
+            );
+            if (isConflict) {
+                throw new IllegalArgumentException("The selected facility is already booked for this date and time slot.");
+            }
+        }
+
         booking.setStatus(Status.PENDING_STAFF_APPROVAL);
         // FIX: Ensure new bookings always start with a non-null, empty remarks string.
         if (booking.getRemarks() == null) {
@@ -68,6 +94,32 @@ public class BookingService {
         booking.setRemarks(updatedRemarks.trim()); 
         
         bookingRepository.save(booking);
+
+        if (newStatus == Status.APPROVED) {
+            ApprovedBookingHistory history = new ApprovedBookingHistory();
+            history.setOriginalBookingId(booking.getBookingId());
+            if (booking.getUser() != null) {
+                history.setUserId(booking.getUser().getId());
+                history.setUserName(booking.getUser().getName());
+            }
+            if (booking.getFacility() != null) {
+                history.setFacilityId(booking.getFacility().getId());
+                history.setFacilityName(booking.getFacility().getName());
+            }
+            personRepository.findByName(approverName).ifPresent(person -> {
+                history.setApproverId(person.getId());
+                history.setApproverName(person.getName());
+            });
+            history.setEventName(booking.getEventName());
+            history.setEventDescription(booking.getEventDescription());
+            history.setDate(booking.getDate());
+            history.setTimeSlot(booking.getTimeSlot());
+            history.setPaSystemRequired(booking.isPaSystemRequired());
+            history.setRemarks(updatedRemarks.trim());
+            
+            historyRepository.save(history);
+        }
+
         return Optional.of(booking);
     }
 
